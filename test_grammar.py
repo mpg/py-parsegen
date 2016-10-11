@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding: utf-8
 
-from gram import Grammar
+from grammar import Grammar
 import unittest
 import collections
 
