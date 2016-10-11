@@ -161,5 +161,5 @@ class KnownValues(unittest.TestCase):
         g_pprods = tuple(g.pprod(i) for i in range(len(g.productions)))
         self.assertEqual(pprods, g_pprods)
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no branch
     unittest.main()

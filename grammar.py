@@ -115,7 +115,8 @@ class Grammar:
         lhs, rhs = self.productions[i]
         return "{} -> {}".format(lhs, " ".join(rhs))
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":  # pragma: no cover
     import fileinput
     from pprint import pprint
 
