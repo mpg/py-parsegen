@@ -149,6 +149,17 @@ class KnownValues(unittest.TestCase):
             for s in follow:
                 self.assertEqual(follow[s], g.follow[s])
 
+    pprod = (
+            ("S -> A | b |", "A -> A a | a"),
+            ("S -> A", "S -> b", "S -> ", "A -> A a", "A -> a"),
+            )
+
+    def test_pprod(self):
+        """Pretty-printing productions"""
+        rules, pprods = self.pprod
+        g = Grammar(rules)
+        g_pprods = tuple(g.pprod(i) for i in range(len(g.productions)))
+        self.assertEqual(pprods, g_pprods)
 
 if __name__ == "__main__":
     unittest.main()

@@ -110,6 +110,10 @@ class Grammar:
                         new = self._follow_for(lhs, rhs[i], rhs[i+1:])
                         done &= self._stable_update(self.follow[rhs[i]], new)
 
+    def pprod(self, i):
+        """Pretty representation of production number i"""
+        lhs, rhs = self.productions[i]
+        return "{} -> {}".format(lhs, " ".join(rhs))
 
 if __name__ == "__main__":
     import fileinput
