@@ -16,7 +16,6 @@ class Grammar:
     """A grammar and associated tools"""
 
     END = -1 # end marker, guaranteed distinct from actual symbols
-    EPS = frozenset(("",)) # epsilon, the empty string
 
     def __init__(self, rules):
         """
@@ -57,7 +56,7 @@ class Grammar:
 
         while elements:
             s = elements.pop()
-            result |= self.first[s] - self.EPS
+            result |= self.first[s] - {""}
             if "" not in self.first[s]:
                 return result
 
