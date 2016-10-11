@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding: utf-8
 
-import gram
+from gram import Grammar
 import unittest
 import collections
 
@@ -37,7 +37,7 @@ class KnownValues(unittest.TestCase):
     def test_basic_params(self):
         """Creating the grammar should set basic parameters"""
         for basics in self.known_basics:
-            g = gram.Grammar(basics.rules)
+            g = Grammar(basics.rules)
             self.assertEqual(basics.nbprods, len(g.productions))
             self.assertEqual(basics.start, g.start_symbol)
             self.assertEqual(basics.nonterms, g.non_terminals)
@@ -105,7 +105,7 @@ class KnownValues(unittest.TestCase):
     def test_first(self):
         """Creating the grammar should compute First sets"""
         for rules, first in self.known_firsts:
-            g = gram.Grammar(rules)
+            g = Grammar(rules)
             self.assertEqual(first.keys(), g.first.keys())
             for s in first:
                 self.assertEqual(first[s], g.first[s])
@@ -120,11 +120,11 @@ class KnownValues(unittest.TestCase):
                     "F -> ( E ) | id",
                 ),
                 {
-                    "E": {")", gram.Grammar.END},
-                    "E'": {")", gram.Grammar.END},
-                    "T": {"+", ")", gram.Grammar.END},
-                    "T'": {"+", ")", gram.Grammar.END},
-                    "F": {"*", "+", ")", gram.Grammar.END},
+                    "E": {")", Grammar.END},
+                    "E'": {")", Grammar.END},
+                    "T": {"+", ")", Grammar.END},
+                    "T'": {"+", ")", Grammar.END},
+                    "F": {"*", "+", ")", Grammar.END},
                 },
             ),
             (
@@ -134,9 +134,9 @@ class KnownValues(unittest.TestCase):
                     "X -> . R | + R | *",
                 ),
                 {
-                    "R": {gram.Grammar.END, ")", ".", "+", "*"},
-                    "R'": {gram.Grammar.END, ")", ".", "+", "*"},
-                    "X": {gram.Grammar.END, ")", ".", "+", "*"},
+                    "R": {Grammar.END, ")", ".", "+", "*"},
+                    "R'": {Grammar.END, ")", ".", "+", "*"},
+                    "X": {Grammar.END, ")", ".", "+", "*"},
                 }
             )
         ]
@@ -144,7 +144,7 @@ class KnownValues(unittest.TestCase):
     def test_follow(self):
         """Creating the grammar should compute Follow sets"""
         for rules, follow in self.known_follows:
-            g = gram.Grammar(rules)
+            g = Grammar(rules)
             self.assertEqual(follow.keys(), g.follow.keys())
             for s in follow:
                 self.assertEqual(follow[s], g.follow[s])
