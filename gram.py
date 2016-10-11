@@ -22,7 +22,10 @@ class Grammar:
         """
         Read grammar from an iterable containing strings like:
             non_term -> prod_1 | prod_2 | ... | prod_n
-        and prod_i is any sequence of space-separated symbols.
+        and prod_i is a (possibly empty) space-separated list of symbols;
+        ii n == 1, then prod_1 must not be empty;
+        a symbol is a non-empty sequence of non-whitespace characters;
+        non_term must be a symbol too.
 
         Sets of terminals and non-terminals are infered from the rules.
         The start symbol is taken as the lhs of the first production.
