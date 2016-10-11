@@ -1,17 +1,6 @@
 #!/usr/bin/python3
 # coding: utf-8
 
-"""
-This is just me playing with methods for generating persers.
-
-References used:
-[TRDB] The Red Dragon Book
-    Aho, Sethi, Ullman: Compilers: Principles, Techniques and Tools, 1st Ed
-[A2C2] Alex Aiken's Compilers Course
-    https://lagunita.stanford.edu/courses/Engineering/Compilers/Fall2014/about
-    https://web.stanford.edu/class/cs143/
-"""
-
 
 class Grammar:
     """A grammar and associated tools"""
