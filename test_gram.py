@@ -83,12 +83,39 @@ class KnownValues(unittest.TestCase):
         ]
 
     def test_first(self):
-        """Creating the grammar should compute First set"""
+        """Creating the grammar should compute First sets"""
         for rules, first in self.known_firsts:
             g = gram.Grammar(rules)
             self.assertEqual(first.keys(), g.first.keys())
             for s in first:
                 self.assertEqual(first[s], g.first[s])
+
+    known_follows = [
+            (
+                (
+                    "E -> T E'",
+                    "E' -> + T E' |",
+                    "T -> F T'",
+                    "T' -> * F T' |",
+                    "F -> ( E ) | id",
+                ),
+                {
+                    "E": {")", gram.Grammar.END},
+                    "E'": {")", gram.Grammar.END},
+                    "T": {"+", ")", gram.Grammar.END},
+                    "T'": {"+", ")", gram.Grammar.END},
+                    "F": {"*", "+", ")", gram.Grammar.END},
+                },
+            ),
+        ]
+
+    def test_follow(self):
+        """Creating the grammar should compute Follow sets"""
+        for rules, follow in self.known_follows:
+            g = gram.Grammar(rules)
+            self.assertEqual(follow.keys(), g.follow.keys())
+            for s in follow:
+                self.assertEqual(follow[s], g.follow[s])
 
 
 if __name__ == "__main__":
