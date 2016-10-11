@@ -1,92 +1,128 @@
 #!/usr/bin/python3
 # coding: utf-8
 
-import fileinput
-from pprint import pprint
+"""
+This is just me playing with methods for generating persers.
 
-# end marker disting from any symbol
-END = -1
-# a set containing just the empty string
-EPS = frozenset("")
+References used:
+[TRDB] The Red Dragon Book
+    Aho, Sethi, Ullman: Compilers: Principles, Techniques and Tools, 1st Ed
+[A2C2] Alex Aiken's Compilers Course
+    https://lagunita.stanford.edu/courses/Engineering/Compilers/Fall2014/about
+    https://web.stanford.edu/class/cs143/
+"""
 
-# Read grammar with the following on each line:
-#   non_term -> prod_1 | prod_2 | ... | prod_n
-# and prod_i is any sequence of space-separated symbols
-productions = []
-for line in fileinput.input():
-    (lhs, rhs) = line.split("->")
-    for actual_rhs in rhs.split("|"):
-        productions.append((lhs.strip(), tuple(actual_rhs.split())))
+class Grammar:
+    """A grammar and associated tools"""
 
-print("Productions:")
-pprint(productions)
-print()
+    END = -1 # end marker, guaranteed distinct from actual symbols
+    EPS = frozenset("") # epsilon, the empty string
 
-# infer useful info about the grammar
-start_symbol = productions[0][0]
-non_terminals = frozenset(prod[0] for prod in productions)
-rhs_symbols = frozenset(s for prod in productions for s in prod[1])
-terminals = rhs_symbols - non_terminals
-symbols = rhs_symbols | non_terminals
+    def __init__(self, rules):
+        """
+        Read grammar from an iterable containing strings like:
+            non_term -> prod_1 | prod_2 | ... | prod_n
+        and prod_i is any sequence of space-separated symbols.
 
-# compute First sets
+        Sets of terminals and non-terminals are infered from the rules.
+        The start symbol is taken as the lhs of the first production.
+        """
+        # store productions in a usable form
+        self.productions = []
+        for line in rules:
+            (lhs, rhs) = line.split("->")
+            for single_rhs in rhs.split("|"):
+                rhs_elements = tuple(single_rhs.split())
+                self.productions.append((lhs.strip(), rhs_elements))
 
-def stable_update(cur, new):
-    "Update cur with new elements and return whether it's unchanged"""
-    if cur >= new:
-        return True
+        # infer remaining elements of the grammar
+        self.start_symbol = self.productions[0][0]
+        self.non_terminals = frozenset(prod[0] for prod in self.productions)
+        rhs_symbols = frozenset(s for prod in self.productions for s in prod[1])
+        self.terminals = rhs_symbols - self.non_terminals
+        self.symbols = self.terminals | self.non_terminals
 
-    cur |= new
-    return False
+        # pre-compute First and Follow sets (always useful)
+        self._init_first()
+        self._init_follow()
 
-def first_of(sentence):
-    result = set()
-    elements = list(reversed(sentence))
+    def _first_of(self, sequence):
+        """Compute the First set of a sequence of symbols
+        [TRDB] Sec 4.4 (p. 189)"""
+        result = set()
+        elements = list(reversed(sequence))
 
-    while elements:
-        s = elements.pop()
-        result |= first[s] - EPS
-        if "" not in first[s]:
-            return result
+        while elements:
+            s = elements.pop()
+            result |= self.first[s] - self.EPS
+            if "" not in self.first[s]:
+                return result
 
-    result.add("");
-    return result
+        result.add("");
+        return result
 
-first = {s: frozenset(s) if s in terminals else set() for s in symbols}
+    # helper for iteratively computing sets and tracking when we're done
+    @staticmethod
+    def _stable_update(cur, new):
+        "Update cur with new elements and return whether it's unchanged"""
+        if cur >= new:
+            return True
 
-done = False
-while not done:
-    done = True
-    for lhs, rhs in productions:
-        done &= stable_update(first[lhs], first_of(rhs))
+        cur |= new
+        return False
 
-print("First sets:")
-pprint(first)
-print()
+    def _init_first(self):
+        """Compute the First set of each symbol
+        [TRDB] Sec 4.4 (p. 189)"""
+        self.first = {s: frozenset(s) if s in self.terminals else set()
+                                      for s in self.symbols}
 
-# compute follow sets
+        done = False
+        while not done:
+            done = True
+            for lhs, rhs in self.productions:
+                done &= self._stable_update(self.first[lhs], self._first_of(rhs))
 
-def follow_fragment(lhs, symbol, after):
-    result = first_of(after)
+    def _follow_for(self, lhs, symbol, after):
+        """Partial Follow set for an occurence of symbol in a production.
+        [TRDB] Sec 4.4 (p. 189)"""
+        result = self._first_of(after)
 
-    if "" in result:
-        result -= EPS
-        result |= follow[lhs]
+        if "" in result:
+            result -= self.EPS
+            result |= self.follow[lhs]
 
-    return result
+        return result
+
+    def _init_follow(self):
+        """Compute the Follow set of each non-terminal"""
+        self.follow = {n: {self.END} if n == self.start_symbol else set()
+                                for n in self.non_terminals}
+
+        done = False
+        while not done:
+            done = True
+            for lhs, rhs in self.productions:
+                for i in range(len(rhs)):
+                    if rhs[i] in self.non_terminals:
+                        new = self._follow_for(lhs, rhs[i], rhs[i+1:])
+                        done &= self._stable_update(self.follow[rhs[i]], new)
 
 
-follow = {n: {END} if n == start_symbol else set() for n in non_terminals}
+if __name__ == "__main__":
+    import fileinput
+    from pprint import pprint
 
-done = False
-while not done:
-    done = True
-    for lhs, rhs in productions:
-        for i in range(len(rhs)):
-            if rhs[i] in non_terminals:
-                new = follow_fragment(lhs, rhs[i], rhs[i+1:])
-                done &= stable_update(follow[rhs[i]], new)
+    gram = Grammar(fileinput.input())
 
-print("Follow sets:")
-pprint(follow)
-print()
+    print("Productions:")
+    pprint(gram.productions)
+    print()
+
+    print("First sets:")
+    pprint(gram.first)
+    print()
+
+    print("Follow sets:")
+    pprint(gram.follow)
+    print()
