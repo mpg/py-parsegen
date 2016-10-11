@@ -77,8 +77,8 @@ class Grammar:
     def _init_first(self):
         """Compute the First set of each symbol
         [TRDB] Sec 4.4 (p. 189)"""
-        self.first = {s: frozenset(s) if s in self.terminals else set()
-                                      for s in self.symbols}
+        self.first = {s: frozenset((s,)) if s in self.terminals else set()
+                                         for s in self.symbols}
 
         done = False
         while not done:
