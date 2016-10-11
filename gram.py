@@ -52,10 +52,8 @@ class Grammar:
         """Compute the First set of a sequence of symbols
         [TRDB] Sec 4.4 (p. 189)"""
         result = set()
-        elements = list(reversed(sequence))
 
-        while elements:
-            s = elements.pop()
+        for s in sequence:
             result |= self.first[s] - {""}
             if "" not in self.first[s]:
                 return result
