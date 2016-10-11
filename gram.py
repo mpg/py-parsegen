@@ -16,7 +16,7 @@ class Grammar:
     """A grammar and associated tools"""
 
     END = -1 # end marker, guaranteed distinct from actual symbols
-    EPS = frozenset("") # epsilon, the empty string
+    EPS = frozenset(("",)) # epsilon, the empty string
 
     def __init__(self, rules):
         """
