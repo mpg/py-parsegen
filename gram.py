@@ -12,10 +12,11 @@ References used:
     https://web.stanford.edu/class/cs143/
 """
 
+
 class Grammar:
     """A grammar and associated tools"""
 
-    END = -1 # end marker, guaranteed distinct from actual symbols
+    END = -1  # end marker, guaranteed distinct from actual symbols
 
     def __init__(self, rules):
         """
@@ -40,7 +41,7 @@ class Grammar:
         # infer remaining elements of the grammar
         self.start_symbol = self.productions[0][0]
         self.non_terminals = frozenset(prod[0] for prod in self.productions)
-        rhs_symbols = frozenset(s for prod in self.productions for s in prod[1])
+        rhs_symbols = frozenset(s for p in self.productions for s in p[1])
         self.terminals = rhs_symbols - self.non_terminals
         self.symbols = self.terminals | self.non_terminals
 
@@ -58,7 +59,7 @@ class Grammar:
             if "" not in self.first[s]:
                 return result
 
-        result.add("");
+        result.add("")
         return result
 
     # helper for iteratively computing sets and tracking when we're done
@@ -75,13 +76,14 @@ class Grammar:
         """Compute the First set of each symbol
         [TRDB] Sec 4.4 (p. 189)"""
         self.first = {s: frozenset((s,)) if s in self.terminals else set()
-                                         for s in self.symbols}
+                      for s in self.symbols}
 
         done = False
         while not done:
             done = True
             for lhs, rhs in self.productions:
-                done &= self._stable_update(self.first[lhs], self._first_of(rhs))
+                new = self._first_of(rhs)
+                done &= self._stable_update(self.first[lhs], new)
 
     def _follow_for(self, lhs, symbol, after):
         """Partial Follow set for an occurence of symbol in a production.
@@ -97,7 +99,7 @@ class Grammar:
     def _init_follow(self):
         """Compute the Follow set of each non-terminal"""
         self.follow = {n: {self.END} if n == self.start_symbol else set()
-                                for n in self.non_terminals}
+                       for n in self.non_terminals}
 
         done = False
         while not done:

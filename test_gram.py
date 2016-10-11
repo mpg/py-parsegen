@@ -7,28 +7,30 @@ import collections
 
 
 RefBasic = collections.namedtuple("RefBasic",
-        ["rules", "nbprods", "start", "nonterms", "terms", "symbs"])
+                                  ["rules", "nbprods", "start",
+                                   "nonterms", "terms", "symbs"])
+
 
 class KnownValues(unittest.TestCase):
     known_basics = [
             RefBasic(
-                rules = ("S -> A | b |", "A -> A a | a"),
-                nbprods = 5,
-                start = "S",
-                nonterms = {"S", "A"},
-                terms = {"a", "b"},
-                symbs = {"S", "A", "a", "b"},
+                rules=("S -> A | b |", "A -> A a | a"),
+                nbprods=5,
+                start="S",
+                nonterms={"S", "A"},
+                terms={"a", "b"},
+                symbs={"S", "A", "a", "b"},
                 ),
             RefBasic(
-                rules = (
+                rules=(
                     "S -> A ( S ) B |",
                     "A -> S | S B | ex |",
                     "B -> S B | why"),
-                nbprods = 8,
-                start = "S",
-                nonterms = {"S", "A", "B"},
-                terms = {"ex", "why", "(", ")"},
-                symbs = {"S", "A", "B", "ex", "why", "(", ")"},
+                nbprods=8,
+                start="S",
+                nonterms={"S", "A", "B"},
+                terms={"ex", "why", "(", ")"},
+                symbs={"S", "A", "B", "ex", "why", "(", ")"},
                 ),
             ]
 
