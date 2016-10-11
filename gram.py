@@ -92,7 +92,7 @@ class Grammar:
         result = self._first_of(after)
 
         if "" in result:
-            result -= self.EPS
+            result.remove("")
             result |= self.follow[lhs]
 
         return result
