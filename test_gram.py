@@ -22,13 +22,13 @@ class KnownValues(unittest.TestCase):
             RefBasic(
                 rules = (
                     "S -> A ( S ) B |",
-                    "A -> S | S B | x |",
-                    "B -> S B | y"),
+                    "A -> S | S B | ex |",
+                    "B -> S B | why"),
                 nbprods = 8,
                 start = "S",
                 nonterms = {"S", "A", "B"},
-                terms = {"x", "y", "(", ")"},
-                symbs = {"S", "A", "B", "x", "y", "(", ")"},
+                terms = {"ex", "why", "(", ")"},
+                symbs = {"S", "A", "B", "ex", "why", "(", ")"},
                 ),
             ]
 
@@ -41,6 +41,54 @@ class KnownValues(unittest.TestCase):
             self.assertEqual(basics.nonterms, g.non_terminals)
             self.assertEqual(basics.terms, g.terminals)
             self.assertEqual(basics.symbs, g.symbols)
+
+    known_firsts = [
+            (
+                (
+                    "S -> A ( S ) B |",
+                    "A -> S | S B | x |",
+                    "B -> S B | y",
+                ),
+                {
+                    "x": {"x"},
+                    "y": {"y"},
+                    "(": {"("},
+                    ")": {")"},
+                    "S": {"", "x", "y", "("},
+                    "A": {"", "x", "y", "("},
+                    "B": {"", "x", "y", "("},
+                },
+            ),
+            (
+                (
+                    "E -> T E'",
+                    "E' -> + T E' |",
+                    "T -> F T'",
+                    "T' -> * F T' |",
+                    "F -> ( E ) | id",
+                ),
+                {
+                    "(": {"("},
+                    ")": {")"},
+                    "+": {"+"},
+                    "*": {"*"},
+                    "id": {"id"},
+                    "E": {"(", "id"},
+                    "T": {"(", "id"},
+                    "F": {"(", "id"},
+                    "E'": {"+", ""},
+                    "T'": {"*", ""},
+                },
+            ),
+        ]
+
+    def test_first(self):
+        """Creating the grammar should compute First set"""
+        for rules, first in self.known_firsts:
+            g = gram.Grammar(rules)
+            self.assertEqual(first.keys(), g.first.keys())
+            for s in first:
+                self.assertEqual(first[s], g.first[s])
 
 
 if __name__ == "__main__":
