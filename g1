@@ -1,0 +1,2 @@
+E -> id T | ( E ) T
+T -> + id | * id
