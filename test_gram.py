@@ -80,6 +80,24 @@ class KnownValues(unittest.TestCase):
                     "T'": {"*", ""},
                 },
             ),
+            (
+                (
+                    "R -> a R' | ( R ) R'",
+                    "R' -> | X R'",
+                    "X -> . R | + R | *",
+                ),
+                {
+                    "(": {"("},
+                    ")": {")"},
+                    "+": {"+"},
+                    "*": {"*"},
+                    ".": {"."},
+                    "a": {"a"},
+                    "R": {"a", "("},
+                    "R'": {"", ".", "+", "*"},
+                    "X": {".", "+", "*"},
+                }
+            )
         ]
 
     def test_first(self):
@@ -107,6 +125,18 @@ class KnownValues(unittest.TestCase):
                     "F": {"*", "+", ")", gram.Grammar.END},
                 },
             ),
+            (
+                (
+                    "R -> a R' | ( R ) R'",
+                    "R' -> | X R'",
+                    "X -> . R | + R | *",
+                ),
+                {
+                    "R": {gram.Grammar.END, ")", ".", "+", "*"},
+                    "R'": {gram.Grammar.END, ")", ".", "+", "*"},
+                    "X": {gram.Grammar.END, ")", ".", "+", "*"},
+                }
+            )
         ]
 
     def test_follow(self):
