@@ -55,6 +55,22 @@ class ParseTree:
         """Iterator of steps in a rightmost derivation"""
         yield from self._derive(_norev)
 
+    def unparse(self):
+        """Return a string that would parse as this tree"""
+        leave_symbols = []
+        self._unparse(leave_symbols)
+        while '' in leave_symbols:
+            leave_symbols.remove('')
+        return ' '.join(leave_symbols)
+
+    def _unparse(self, leave_symbols):
+        """Traverse in-order, collecting symbols of leaves"""
+        if not self.children:
+            leave_symbols.append(self.symbol)
+        else:
+            for c in self.children:
+                c._unparse(leave_symbols)
+
 
 if __name__ == "__main__":  # pragma: no cover
     PT = ParseTree
@@ -67,3 +83,5 @@ if __name__ == "__main__":  # pragma: no cover
 
     print(" -> ".join(final_tree.leftmost()))
     print()
+
+    print(final_tree.unparse())
