@@ -8,6 +8,9 @@ from itertools import chain
 def _sym(tree):
     return tree.symbol
 
+# helper for selecting side in derivations
+def _norev(it):
+    return it
 
 class ParseTree:
     """Simple tree structure to use as output by the parsers"""
@@ -28,37 +31,42 @@ class ParseTree:
 
     def leftmost(self):
         """Iterator of steps in a leftmost derivation"""
+        rev = reversed
         yield self.symbol
 
         # iterative DFS with explicit stack
-        done = []  # terminals produced so far (leaves visited)
-        todo = [self]  # nodes to be visited (reversed order)
+        todo = [self]  # nodes to be visited (stack: next on top)
+        done = []  # terminals produced so far (most recent on top)
+        beg, end = tuple(rev((todo, done))) # for display
         while todo:
             cur = todo.pop()
             if cur.children:
-                for c in reversed(cur.children):
+                for c in rev(cur.children):
                     todo.append(c)
 
-                yield ' '.join(map(_sym, chain(done, reversed(todo))))
+                yield ' '.join(map(_sym, chain(beg, reversed(end))))
             else:
                 done.append(cur)
 
     def rightmost(self):
         """Iterator of steps in a rightmost derivation"""
+        rev = _norev
         yield self.symbol
 
         # iterative DFS with explicit stack
-        done = []  # terminals produced so far (leaves visited)
-        todo = [self]  # nodes to be visited (reversed order)
+        todo = [self]  # nodes to be visited (stack: next on top)
+        done = []  # terminals produced so far (most recent on top)
+        beg, end = tuple(rev((todo, done))) # for display
         while todo:
             cur = todo.pop()
             if cur.children:
-                for c in cur.children:
+                for c in rev(cur.children):
                     todo.append(c)
 
-                yield ' '.join(map(_sym, chain(todo, reversed(done))))
+                yield ' '.join(map(_sym, chain(beg, reversed(end))))
             else:
                 done.append(cur)
+
 
 if __name__ == "__main__":  # pragma: no cover
     PT = ParseTree
