@@ -78,6 +78,26 @@ class KnownValues(unittest.TestCase):
         """Check str() against known result"""
         self.assertEqual(str(self.sample_tree), self.sample_str)
 
+    sample_leftmost = (
+            "E",
+            "T E'",
+            "F T' E'",
+            "id T' E'",
+            "id  E'",
+            "id  + T E'",
+            "id  + F T' E'",
+            "id  + id T' E'",
+            "id  + id * F T' E'",
+            "id  + id * id T' E'",
+            "id  + id * id  E'",
+            "id  + id * id  ",
+            )
+
+    def test_leftmost(self):
+        """Check leftmost() against know result"""
+        t_leftmost = tuple(self.sample_tree.leftmost())
+        self.assertEqual(self.sample_leftmost, t_leftmost)
+
 
 if __name__ == "__main__":  # pragma: no branch
     unittest.main()
