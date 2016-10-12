@@ -29,9 +29,8 @@ class ParseTree:
         """String representation"""
         return "\n".join(self.lines())
 
-    def leftmost(self):
-        """Iterator of steps in a leftmost derivation"""
-        rev = reversed
+    def _derive(self, rev):
+        """Iterator of steps in a left- or rightmost derivation"""
         yield self.symbol
 
         # iterative DFS with explicit stack
@@ -47,25 +46,14 @@ class ParseTree:
                 yield ' '.join(map(_sym, chain(beg, reversed(end))))
             else:
                 done.append(cur)
+
+    def leftmost(self):
+        """Iterator of steps in a leftmost derivation"""
+        yield from self._derive(reversed)
 
     def rightmost(self):
         """Iterator of steps in a rightmost derivation"""
-        rev = _norev
-        yield self.symbol
-
-        # iterative DFS with explicit stack
-        todo = [self]  # nodes to be visited (stack: next on top)
-        done = []  # terminals produced so far (most recent on top)
-        beg, end = tuple(rev((todo, done))) # for display
-        while todo:
-            cur = todo.pop()
-            if cur.children:
-                for c in rev(cur.children):
-                    todo.append(c)
-
-                yield ' '.join(map(_sym, chain(beg, reversed(end))))
-            else:
-                done.append(cur)
+        yield from self._derive(_norev)
 
 
 if __name__ == "__main__":  # pragma: no cover
