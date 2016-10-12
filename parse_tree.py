@@ -8,9 +8,11 @@ from itertools import chain
 def _sym(tree):
     return tree.symbol
 
+
 # helper for selecting side in derivations
 def _norev(it):
     return it
+
 
 class ParseTree:
     """Simple tree structure to use as output by the parsers"""
@@ -36,13 +38,11 @@ class ParseTree:
         # iterative DFS with explicit stack
         todo = [self]  # nodes to be visited (stack: next on top)
         done = []  # terminals produced so far (most recent on top)
-        beg, end = tuple(rev((todo, done))) # for display
+        beg, end = tuple(rev((todo, done)))  # for display
         while todo:
             cur = todo.pop()
             if cur.children:
-                for c in rev(cur.children):
-                    todo.append(c)
-
+                todo.extend(list(rev(cur.children)))
                 yield ' '.join(map(_sym, chain(beg, reversed(end))))
             else:
                 done.append(cur)
