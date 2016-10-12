@@ -43,6 +43,22 @@ class ParseTree:
             else:
                 done.append(cur)
 
+    def rightmost(self):
+        """Iterator of steps in a rightmost derivation"""
+        yield self.symbol
+
+        # iterative DFS with explicit stack
+        done = []  # terminals produced so far (leaves visited)
+        todo = [self]  # nodes to be visited (reversed order)
+        while todo:
+            cur = todo.pop()
+            if cur.children:
+                for c in cur.children:
+                    todo.append(c)
+
+                yield ' '.join(map(_sym, chain(todo, reversed(done))))
+            else:
+                done.append(cur)
 
 if __name__ == "__main__":  # pragma: no cover
     PT = ParseTree

@@ -91,12 +91,32 @@ class KnownValues(unittest.TestCase):
             "id  + id * id T' E'",
             "id  + id * id  E'",
             "id  + id * id  ",
-            )
+    )
 
     def test_leftmost(self):
         """Check leftmost() against know result"""
         t_leftmost = tuple(self.sample_tree.leftmost())
         self.assertEqual(self.sample_leftmost, t_leftmost)
+
+    sample_rightmost = (
+            "E",
+            "T E'",
+            "T + T E'",
+            "T + T ",
+            "T + F T' ",
+            "T + F * F T' ",
+            "T + F * F  ",
+            "T + F * id  ",
+            "T + id * id  ",
+            "F T' + id * id  ",
+            "F  + id * id  ",
+            "id  + id * id  ",
+    )
+
+    def test_rightmost(self):
+        """Check rightmost() against know result"""
+        t_rightmost = tuple(self.sample_tree.rightmost())
+        self.assertEqual(self.sample_rightmost, t_rightmost)
 
 
 if __name__ == "__main__":  # pragma: no branch
