@@ -47,7 +47,7 @@ class KnownValues(unittest.TestCase):
     def test_bad_grammars(self):
         """LL1 should raise when fed a non-LL(1) grammar"""
         for g in self.bad_grams:
-            with self.assertRaisesRegex(ValueError, "^Conflict for"):
+            with self.assertRaises(LL1.GrammarNotLL1):
                 LL1(Grammar(g))
 
 

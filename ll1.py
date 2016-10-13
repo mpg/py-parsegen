@@ -21,13 +21,16 @@ class LL1:
             for t in first:
                 self._table_add(lhs, t, i)
 
+    class GrammarNotLL1(ValueError):
+        pass
+
     def _table_add(self, lhs, term, prod_idx):
         if (lhs, term) in self.table:
             msg = "Conflict for ({}, {}): '{}' vs '{}'".format(
                     lhs, term,
                     self.g.pprod(prod_idx),
                     self.g.pprod(self.table[lhs, term]))
-            raise ValueError(msg)
+            raise self.GrammarNotLL1(msg)
         self.table[lhs, term] = prod_idx
 
 
@@ -42,7 +45,7 @@ if __name__ == "__main__":  # pragma: no cover
     with open(sys.argv[1]) as gram_in:
         try:
             ll1 = LL1(Grammar(gram_in))
-        except ValueError as err:
+        except LL1.GrammarNotLL1 as err:
             sys.stderr.write("Grammar is not LL1:\n{}\n".format(err))
             sys.exit(1)
 
