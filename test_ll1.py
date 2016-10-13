@@ -51,5 +51,5 @@ class KnownValues(unittest.TestCase):
                 LL1(Grammar(g))
 
 
-if __name__ == '__main__':  # pragma: no branch
+if __name__ == '__main__':  # pragma: no cover
     unittest.main()

@@ -126,5 +126,5 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(self.sample_unparse, t_unparse)
 
 
-if __name__ == "__main__":  # pragma: no branch
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()
