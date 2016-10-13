@@ -34,7 +34,7 @@ class KnownValues(unittest.TestCase):
     }
 
     def test_table(self):
-        """Check LL1 table against known value"""
+        """LL1: Check table against known value"""
         parser = LL1(Grammar(self.gram))
         self.assertEqual(parser.table, self.table)
 
@@ -45,7 +45,7 @@ class KnownValues(unittest.TestCase):
     )
 
     def test_bad_grammars(self):
-        """LL1 should raise when fed a non-LL(1) grammar"""
+        """LL1: init should raise when fed a non-LL(1) grammar"""
         for g in self.bad_grams:
             with self.assertRaises(LL1.GrammarNotLL1):
                 LL1(Grammar(g))

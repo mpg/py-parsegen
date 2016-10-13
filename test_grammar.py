@@ -35,7 +35,7 @@ class KnownValues(unittest.TestCase):
             ]
 
     def test_basic_params(self):
-        """Creating the grammar should set basic parameters"""
+        """Grammar: init should set basic parameters"""
         for basics in self.known_basics:
             g = Grammar(basics.rules)
             self.assertEqual(basics.nbprods, len(g.productions))
@@ -103,7 +103,7 @@ class KnownValues(unittest.TestCase):
         ]
 
     def test_first(self):
-        """Creating the grammar should compute First sets"""
+        """Grammar: init should compute First sets"""
         for rules, first in self.known_firsts:
             g = Grammar(rules)
             self.assertEqual(first.keys(), g.first.keys())
@@ -142,7 +142,7 @@ class KnownValues(unittest.TestCase):
         ]
 
     def test_follow(self):
-        """Creating the grammar should compute Follow sets"""
+        """Grammar: init should compute Follow sets"""
         for rules, follow in self.known_follows:
             g = Grammar(rules)
             self.assertEqual(follow.keys(), g.follow.keys())
@@ -155,11 +155,12 @@ class KnownValues(unittest.TestCase):
             )
 
     def test_pprod(self):
-        """Pretty-printing productions"""
+        """Grammar: pretty-printing productions"""
         rules, pprods = self.pprod
         g = Grammar(rules)
         g_pprods = tuple(g.pprod(i) for i in range(len(g.productions)))
         self.assertEqual(pprods, g_pprods)
+
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()

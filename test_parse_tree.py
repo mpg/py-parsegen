@@ -50,7 +50,7 @@ class KnownValues(unittest.TestCase):
     )
 
     def test_lines(self):
-        """Check lines() method against know result"""
+        """ParseTree: check lines() against know result"""
         t_lines = tuple(self.sample_tree.lines())
         self.assertEqual(t_lines, self.sample_lines)
 
@@ -75,7 +75,7 @@ class KnownValues(unittest.TestCase):
 | | | ε"""
 
     def test_str(self):
-        """Check str() against known result"""
+        """ParseTRee: check str() against known result"""
         self.assertEqual(str(self.sample_tree), self.sample_str)
 
     sample_leftmost = (
@@ -94,7 +94,7 @@ class KnownValues(unittest.TestCase):
     )
 
     def test_leftmost(self):
-        """Check leftmost() against known result"""
+        """ParseTree: check leftmost() against known result"""
         t_leftmost = tuple(self.sample_tree.leftmost())
         self.assertEqual(self.sample_leftmost, t_leftmost)
 
@@ -114,14 +114,14 @@ class KnownValues(unittest.TestCase):
     )
 
     def test_rightmost(self):
-        """Check rightmost() against known result"""
+        """ParseTree: check rightmost() against known result"""
         t_rightmost = tuple(self.sample_tree.rightmost())
         self.assertEqual(self.sample_rightmost, t_rightmost)
 
     sample_unparse = "id + id * id"
 
     def test_unparse(self):
-        """Check unparse against known result"""
+        """ParseTree: check unparse against known result"""
         t_unparse = self.sample_tree.unparse()
         self.assertEqual(self.sample_unparse, t_unparse)
 
