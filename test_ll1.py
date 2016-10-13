@@ -38,6 +38,18 @@ class KnownValues(unittest.TestCase):
         parser = LL1(Grammar(self.gram))
         self.assertEqual(parser.table, self.table)
 
+    bad_grams = (
+            ("S -> S a | a",),  # left-recursive
+            ("S -> a S | a",),  # non left-factored
+            ("S -> A | B", "A -> x", "B -> x"),  # ambigous
+    )
+
+    def test_bad_grammars(self):
+        """LL1 should raise when fed a non-LL(1) grammar"""
+        for g in self.bad_grams:
+            with self.assertRaisesRegex(ValueError, "^Conflict for"):
+                LL1(Grammar(g))
+
 
 if __name__ == '__main__':  # pragma: no branch
     unittest.main()

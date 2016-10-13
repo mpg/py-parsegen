@@ -15,8 +15,17 @@ class LL1:
 
             if '' in first:
                 for t in self.g.follow[lhs]:
-                    self.table[lhs, t] = i
+                    self._table_add(lhs, t, i)
                 first.remove('')
 
             for t in first:
-                self.table[lhs, t] = i
+                self._table_add(lhs, t, i)
+
+    def _table_add(self, lhs, term, prod_idx):
+        if (lhs, term) in self.table:
+            msg = "Conflict for ({}, {}): '{}' vs '{}'".format(
+                    lhs, term,
+                    self.g.pprod(prod_idx),
+                    self.g.pprod(self.table[lhs, term]))
+            raise ValueError(msg)
+        self.table[lhs, term] = prod_idx
