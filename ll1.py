@@ -29,3 +29,24 @@ class LL1:
                     self.g.pprod(self.table[lhs, term]))
             raise ValueError(msg)
         self.table[lhs, term] = prod_idx
+
+
+if __name__ == "__main__":  # pragma: no cover
+    from grammar import Grammar
+    import sys
+
+    if len(sys.argv) < 2:
+        sys.stderr.write("Usage: ll1.py grammar_file [string_to_parse]\n")
+        sys.exit(1)
+
+    with open(sys.argv[1]) as gram_in:
+        try:
+            ll1 = LL1(Grammar(gram_in))
+        except ValueError as err:
+            sys.stderr.write("Grammar is not LL1:\n{}\n".format(err))
+            sys.exit(1)
+
+    print("LL(1) parsing table:")
+    for lhs, term in ll1.table:
+        prod = ll1.g.pprod(ll1.table[lhs, term])
+        print("{}\t{}\t{}".format(lhs, term, prod))
