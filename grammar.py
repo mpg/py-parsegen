@@ -38,7 +38,7 @@ class Grammar:
         self._init_first()
         self._init_follow()
 
-    def _first_of(self, sequence):
+    def first_of(self, sequence):
         """Compute the First set of a sequence of symbols
         [TRDB] Sec 4.4 (p. 189)"""
         result = set()
@@ -71,13 +71,13 @@ class Grammar:
         while not done:
             done = True
             for lhs, rhs in self.productions:
-                new = self._first_of(rhs)
+                new = self.first_of(rhs)
                 done &= self._stable_update(self.first[lhs], new)
 
     def _follow_for(self, lhs, symbol, after):
         """Partial Follow set for an occurence of symbol in a production.
         [TRDB] Sec 4.4 (p. 189)"""
-        result = self._first_of(after)
+        result = self.first_of(after)
 
         if "" in result:
             result.remove("")
