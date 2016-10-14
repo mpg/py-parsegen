@@ -75,6 +75,26 @@ class KnownValues(unittest.TestCase):
         for s in self.good_sentences:
             ll1.parse(s.split())
 
+    ref_parse = (
+            ("E -> id T | ( E ) T", "T -> + id | * id",),
+            "( id + id ) * id",
+            (
+                "E",
+                "( E ) T",
+                "( id T ) T",
+                "( id + id ) T",
+                "( id + id ) * id",
+            )
+    )
+
+    def test_parse(self):
+        """LL1: check parse() against know result"""
+        gram, sentence, ref_leftmost = self.ref_parse
+        ll1 = LL1(Grammar(gram))
+        tree = ll1.parse(sentence.split())
+        t_leftmost = tuple(tree.leftmost())
+        self.assertEqual(t_leftmost, ref_leftmost)
+
 
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()

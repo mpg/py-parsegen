@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # coding: utf-8
 
+from parse_tree import ParseTree
+
 
 class LL1:
     """LL(1) parser"""
@@ -43,26 +45,45 @@ class LL1:
         [TRDB] Algorithm 4.3 p. 187
         """
 
+        # use a mixed stack with:
+        # - symbols corresponding to the productions in progress
+        # - tree nodes to go back to when their children are complete
         stack = [self.g.END, self.g.start_symbol]
+        cur_node = None
         tok_stream = iter(sentence)
         token = next(tok_stream, self.g.END)
 
         while stack:
             state = stack.pop()
-            if state in self.g.non_terminals:
+            if isinstance(state, ParseTree):
+                cur_node = state
+            elif state in self.g.non_terminals:
                 if (state, token) not in self.table:
                     msg = "In state '{}', got '{}'".format(state, token)
                     raise self.NotInLanguage(msg)
 
+                new_node = ParseTree(state)
+                if cur_node:
+                    cur_node.children.append(new_node)
+                    stack.append(cur_node)
+                cur_node = new_node
+
                 prod_idx = self.table[state, token]
                 rhs = self.g.productions[prod_idx][1]
                 stack.extend(list(reversed(rhs)))
+
+                if len(rhs) == 0:
+                    cur_node.children.append(ParseTree(''))
             else:
                 if token != state:
                     msg = "Expected '{}', got '{}'".format(state, token)
                     raise self.NotInLanguage(msg)
 
-                token = next(tok_stream, self.g.END)
+                if state != self.g.END:
+                    cur_node.children.append(ParseTree(token))
+                    token = next(tok_stream, self.g.END)
+
+        return cur_node
 
 
 if __name__ == "__main__":  # pragma: no cover
@@ -80,18 +101,24 @@ if __name__ == "__main__":  # pragma: no cover
             sys.stderr.write("Grammar is not LL1:\n{}\n".format(err))
             sys.exit(1)
 
+    print("LL(1) parsing table:")
+    for lhs, term in ll1.table:
+        prod = ll1.g.pprod(ll1.table[lhs, term])
+        print("{}\t{}\t{}".format(lhs, term, prod))
+    print()
+
     if len(sys.argv) == 2:
-        print("LL(1) parsing table:")
-        for lhs, term in ll1.table:
-            prod = ll1.g.pprod(ll1.table[lhs, term])
-            print("{}\t{}\t{}".format(lhs, term, prod))
         sys.exit(0)
 
     sentence = sys.argv[2]
     try:
-        ll1.parse(sentence.split())
+        tree = ll1.parse(sentence.split())
     except LL1.NotInLanguage as err:
         sys.stderr.write("Sentence not in language:\n{}\n".format(err))
         sys.exit(1)
 
-    print("Sentence accepted")
+    print("Parse tree:", tree, sep='\n')
+    print()
+
+    print("Leftmost derivation:")
+    print(" -> ".join(tree.leftmost()))
