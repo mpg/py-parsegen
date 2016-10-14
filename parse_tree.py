@@ -61,6 +61,19 @@ class ParseTree:
             for c in self.children:
                 c._unparse(leave_symbols)
 
+    def draw(self, name):  # pragma: no cover
+        """Create a picture of the tree in <name>.pdf"""
+        from graphviz import Digraph
+        dot = Digraph(name, '', name)
+        self._build_dot(dot)
+        dot.render(cleanup=True)
+
+    def _build_dot(self, dot):  # pragma: no cover
+        dot.node(repr(self), self.symbol)
+        for c in self.children:
+            c._build_dot(dot)
+            dot.edge(repr(self), repr(c))
+
 
 if __name__ == "__main__":  # pragma: no cover
     PT = ParseTree
@@ -78,3 +91,5 @@ if __name__ == "__main__":  # pragma: no cover
     print()
 
     print(final_tree.unparse())
+
+    # final_tree.draw("tree")

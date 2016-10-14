@@ -90,8 +90,9 @@ if __name__ == "__main__":  # pragma: no cover
     from grammar import Grammar
     import sys
 
-    if len(sys.argv) not in (2, 3):
-        sys.stderr.write("Usage: ll1.py grammar_file [string_to_parse]\n")
+    if not 2 <= len(sys.argv) <= 4:
+        usage = "Usage: ll1.py grammar_file [string_to_parse] [name]\n"
+        sys.stderr.write(usage)
         sys.exit(1)
 
     with open(sys.argv[1]) as gram_in:
@@ -123,3 +124,8 @@ if __name__ == "__main__":  # pragma: no cover
 
     print("Leftmost derivation:")
     print(" -> ".join(tree.leftmost()))
+    print()
+
+    if len(sys.argv) == 4:
+        tree.draw(sys.argv[3])
+        print("Saved to {}.pdf".format(sys.argv[3]))
