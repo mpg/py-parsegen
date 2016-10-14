@@ -75,4 +75,7 @@ if __name__ == "__main__":  # pragma: no cover
     print(" -> ".join(final_tree.leftmost()))
     print()
 
+    print(" -> ".join(final_tree.rightmost()))
+    print()
+
     print(final_tree.unparse())
