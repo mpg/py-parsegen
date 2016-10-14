@@ -117,7 +117,8 @@ if __name__ == "__main__":  # pragma: no cover
         sys.stderr.write("Sentence not in language:\n{}\n".format(err))
         sys.exit(1)
 
-    print("Parse tree:", tree, sep='\n')
+    print("Parse tree:")
+    print("\n".join(tree.lines()))
     print()
 
     print("Leftmost derivation:")

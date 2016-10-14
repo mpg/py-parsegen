@@ -18,8 +18,7 @@ class ParseTree:
             yield from child.lines(prefix + "| ")
 
     def __str__(self):
-        """String representation"""
-        return "\n".join(self.lines())
+        raise TypeError("Just to detect uses before changing it")
 
     def _derive(self, rev):
         """Iterator of steps in a left- or rightmost derivation"""
@@ -69,7 +68,7 @@ if __name__ == "__main__":  # pragma: no cover
     inner_tree = PT("S", [PT("("), most_inner, PT(")")])
     final_tree = PT("S", [PT("("), inner_tree, PT(")")])
 
-    print(final_tree)
+    print("\n".join(final_tree.lines()))
     print()
 
     print(" -> ".join(final_tree.leftmost()))
