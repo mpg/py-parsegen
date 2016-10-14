@@ -4,16 +4,6 @@
 from itertools import chain
 
 
-# helper for use in printing derivations
-def _sym(tree):
-    return tree.symbol
-
-
-# helper for selecting side in derivations
-def _norev(it):
-    return it
-
-
 class ParseTree:
     """Simple tree structure to use as output by the parsers"""
     def __init__(self, symbol, children=None):
@@ -43,7 +33,8 @@ class ParseTree:
             cur = todo.pop()
             if cur.children:
                 todo.extend(list(rev(cur.children)))
-                yield ' '.join(map(_sym, chain(beg, reversed(end))))
+                symbols = map(lambda n: n.symbol, chain(beg, reversed(end)))
+                yield ' '.join(symbols)
             else:
                 done.append(cur)
 
@@ -53,7 +44,7 @@ class ParseTree:
 
     def rightmost(self):
         """Iterator of steps in a rightmost derivation"""
-        yield from self._derive(_norev)
+        yield from self._derive(lambda x: x)
 
     def unparse(self):
         """Return a string that would parse as this tree"""
