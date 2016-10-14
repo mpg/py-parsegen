@@ -50,6 +50,31 @@ class KnownValues(unittest.TestCase):
             with self.assertRaises(LL1.GrammarNotLL1):
                 LL1(Grammar(g))
 
+    simple_grammar = ("S -> a b",)
+    bad_sentences = ("a", "a b c", "b")
+
+    def test_bad_sentences(self):
+        """LL1: parse() should raise on invalid sentences"""
+        ll1 = LL1(Grammar(self.simple_grammar))
+        for bs in self.bad_sentences:
+            with self.assertRaises(LL1.NotInLanguage):
+                ll1.parse(bs.split())
+
+    # for self.gram
+    good_sentences = (
+            "id",
+            "id + id",
+            "id + id + id",
+            "id + id * id",
+            "( id + id ) * id",
+    )
+
+    def test_good_sentences(self):
+        """LL1: parse() should accept valid sentences"""
+        ll1 = LL1(Grammar(self.gram))
+        for s in self.good_sentences:
+            ll1.parse(s.split())
+
 
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()
