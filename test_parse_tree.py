@@ -54,6 +54,12 @@ class KnownValues(unittest.TestCase):
         t_lines = tuple(self.sample_tree.lines())
         self.assertEqual(t_lines, self.sample_lines)
 
+    sample_str = "('E', 2 children)"
+
+    def test_str(self):
+        """ParseTRee: check str() against known result"""
+        self.assertEqual(str(self.sample_tree), self.sample_str)
+
     sample_leftmost = (
             "E",
             "T E'",

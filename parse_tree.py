@@ -18,7 +18,7 @@ class ParseTree:
             yield from child.lines(prefix + "| ")
 
     def __str__(self):
-        raise TypeError("Just to detect uses before changing it")
+        return "('{}', {} children)".format(self.symbol, len(self.children))
 
     def _derive(self, rev):
         """Iterator of steps in a left- or rightmost derivation"""
