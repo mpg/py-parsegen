@@ -8,12 +8,11 @@ class ParseTree:
     """Simple tree structure to use as output by the parsers"""
     def __init__(self, symbol, children=None):
         self.symbol = symbol
-        self.children = children if children else []
+        self.children = children or []
 
     def lines(self, prefix=""):
         """Iterator of lines of a representation of the tree"""
-        sym = self.symbol if self.symbol else "ε"
-        yield prefix + sym
+        yield prefix + (self.symbol or "ε")
         for child in self.children:
             yield from child.lines(prefix + "| ")
 
