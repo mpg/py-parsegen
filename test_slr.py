@@ -7,6 +7,7 @@ from grammar import Grammar
 
 
 A, S, R = SLR.ACCEPT, SLR.SHIFT, SLR.REDUCE
+AP = SLR.AUG_PROD
 END = Grammar.END
 
 
@@ -14,7 +15,7 @@ class KnownValues(unittest.TestCase):
     gram = ("E -> E + T | T", "T -> T * F | F", "F -> ( E ) | id")
 
     items = (
-            (-1, 0), (-1, 1),
+            (AP, 0), (AP, 1),
             (0, 0), (0, 1), (0, 2), (0, 3),
             (1, 0), (1, 1),
             (2, 0), (2, 1), (2, 2), (2, 3),
@@ -45,9 +46,9 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(self.str_items, t_str_items)
 
     # [TRDB] example 4.34 p. 222
-    start = (-1, 0)
+    start = (AP, 0)
     start_closure = {
-            (-1, 0), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0),
+            (AP, 0), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0),
     }
 
     def test_closure(self):
@@ -57,7 +58,7 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(self.start_closure, t_closure)
 
     # [TRDB] example 4.35 p. 224
-    goto_items = {(-1, 1), (0, 1)}
+    goto_items = {(AP, 1), (0, 1)}
     goto_symbol = '+'
     goto_result = {(0, 2), (2, 0), (3, 0), (4, 0), (5, 0)}
 
@@ -68,8 +69,8 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(self.goto_result, t_result)
 
     ccol = (
-            ((-1, 0), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)),
-            ((-1, 1), (0, 1)),
+            ((AP, 0), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)),
+            ((AP, 1), (0, 1)),
             ((1, 1), (2, 1)),
             ((3, 1),),
             ((4, 1), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)),
