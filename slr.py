@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # coding: utf-8
 
+from parse_tree import ParseTree
 from itertools import chain
 
 
@@ -155,12 +156,12 @@ class SLR:
         [TRDB] Algorithm Fig 4.30 p. 219"""
 
         # store pairs on the stack instead of two values
-        stack = [(0, self.AUG_PROD)]
+        stack = [(0, None)]
         tok_stream = chain(iter(sentence), (self.g.END,))
         token = next(tok_stream)
 
         while True:
-            state, prod_nb = stack[-1]
+            state = stack[-1][0]
 
             try:
                 action, info = self.actions[state, token]
@@ -169,19 +170,21 @@ class SLR:
                 raise self.NotInLanguage(msg)
 
             if action == self.SHIFT:
-                stack.append((info, token))
+                node = ParseTree(token)
+                stack.append((info, node))
                 token = next(tok_stream)
 
             elif action == self.REDUCE:
                 lhs, rhs = self.g.productions[info]
-                for _ in range(len(rhs)):
-                    stack.pop()
+                children = [stack.pop()[1] for _ in range(len(rhs))]
+                children.reverse()
+                node = ParseTree(lhs, children)
                 prev_state = stack[-1][0]
                 new_state = self.gotos[prev_state, lhs]
-                stack.append((new_state, lhs))
+                stack.append((new_state, node))
 
             elif action == self.ACCEPT:
-                return
+                return stack[-1][1]
 
 
 if __name__ == "__main__":  # pragma: no cover
@@ -235,15 +238,14 @@ if __name__ == "__main__":  # pragma: no cover
         sys.stderr.write("Sentence not in language:\n{}\n".format(err))
         sys.exit(1)
 
-    print("Sentence accepted")
-    # print("Parse tree:")
-    # print("\n".join(tree.lines()))
-    # print()
+    print("Parse tree:")
+    print("\n".join(tree.lines()))
+    print()
 
-    # print("Rightmost derivation:")
-    # print(" -> ".join(tree.rightmost()))
-    # print()
+    print("Rightmost derivation:")
+    print(" -> ".join(tree.rightmost()))
+    print()
 
-    # if len(sys.argv) == 4:
-    #     tree.draw(sys.argv[3])
-    #     print("Saved to {}.pdf".format(sys.argv[3]))
+    if len(sys.argv) == 4:
+        tree.draw(sys.argv[3])
+        print("Saved to {}.pdf".format(sys.argv[3]))

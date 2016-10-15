@@ -147,6 +147,26 @@ class KnownValues(unittest.TestCase):
         for s in self.good_sentences:
             slr.parse(s.split())
 
+    sentence = "id + id * id"
+    rightmost = (
+            "E",
+            "E + T",
+            "E + T * F",
+            "E + T * id",
+            "E + F * id",
+            "E + id * id",
+            "T + id * id",
+            "F + id * id",
+            "id + id * id",
+    )
+
+    def test_parse(self):
+        """SLR: check parse() against known result"""
+        slr = SLR(Grammar(self.gram))
+        tree = slr.parse(self.sentence.split())
+        t_rightmost = tuple(tree.rightmost())
+        self.assertEqual(t_rightmost, self.rightmost)
+
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()
