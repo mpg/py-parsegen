@@ -20,9 +20,25 @@ class KnownValues(unittest.TestCase):
     )
 
     def test_items(self):
-        """SLR: check items() against know value"""
+        """SLR: check items() against known value"""
         slr = SLR(Grammar(self.gram))
         self.assertEqual(self.items, tuple(slr.items()))
+
+    str_items = (
+            "| -> | E", "| -> E |",
+            "E -> | E + T", "E -> E | + T", "E -> E + | T", "E -> E + T |",
+            "E -> | T", "E -> T |",
+            "T -> | T * F", "T -> T | * F", "T -> T * | F", "T -> T * F |",
+            "T -> | F", "T -> F |",
+            "F -> | ( E )", "F -> ( | E )", "F -> ( E | )", "F -> ( E ) |",
+            "F -> | id", "F -> id |",
+    )
+
+    def test_str_items(self):
+        """SLR: check str_item() against known value"""
+        slr = SLR(Grammar(self.gram))
+        t_str_items = tuple(slr.str_item(it) for it in slr.items())
+        self.assertEqual(self.str_items, t_str_items)
 
 
 if __name__ == "__main__":  # pragma: no cover
