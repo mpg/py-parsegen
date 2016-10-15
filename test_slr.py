@@ -6,6 +6,10 @@ from slr import SLR
 from grammar import Grammar
 
 
+A, S, R = SLR.ACCEPT, SLR.SHIFT, SLR.REDUCE
+END = Grammar.END
+
+
 class KnownValues(unittest.TestCase):
     gram = ("E -> E + T | T", "T -> T * F | F", "F -> ( E ) | id")
 
@@ -82,6 +86,42 @@ class KnownValues(unittest.TestCase):
         """SLR: check ccol against known value (set by __init__)"""
         slr = SLR(Grammar(self.gram))
         self.assertEqual(self.ccol, slr.ccol)
+
+    # [TRDB] Fig. 4.31 p. 219
+    # /!\ for reduce, production numbers are shifted by 1
+    actions = {
+            (0, 'id'): (S, 5), (0, '('): (S, 4),
+            (1, '+'): (S, 6), (1, END): (A, 0),
+            (2, '+'): (R, 1), (2, '*'): (S, 7),
+            (2, ')'): (R, 1), (2, END): (R, 1),
+            (3, '+'): (R, 3), (3, '*'): (R, 3),
+            (3, ')'): (R, 3), (3, END): (R, 3),
+            (4, 'id'): (S, 5), (4, '('): (S, 4),
+            (5, '+'): (R, 5), (5, '*'): (R, 5),
+            (5, ')'): (R, 5), (5, END): (R, 5),
+            (6, 'id'): (S, 5), (7, '('): (S, 4),
+            (7, 'id'): (S, 5), (6, '('): (S, 4),
+            (8, '+'): (S, 6), (8, ')'): (S, 11),
+            (9, '+'): (R, 0), (9, '*'): (S, 7),
+            (9, ')'): (R, 0), (9, END): (R, 0),
+            (10, '+'): (R, 2), (10, '*'): (R, 2),
+            (10, ')'): (R, 2), (10, END): (R, 2),
+            (11, '+'): (R, 4), (11, '*'): (R, 4),
+            (11, ')'): (R, 4), (11, END): (R, 4),
+    }
+
+    gotos = {
+            (0, 'E'): 1, (0, 'T'): 2, (0, 'F'): 3,
+            (4, 'E'): 8, (4, 'T'): 2, (4, 'F'): 3,
+            (6, 'T'): 9, (6, 'F'): 3,
+            (7, 'F'): 10,
+    }
+
+    def test_tables(self):
+        """SLR: check parsing tables against know value (set by __init__)"""
+        slr = SLR(Grammar(self.gram))
+        self.assertEqual(self.actions, slr.actions)
+        self.assertEqual(self.gotos, slr.gotos)
 
 
 if __name__ == "__main__":  # pragma: no cover

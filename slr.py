@@ -9,10 +9,17 @@ class SLR:
 
     AUG_PROD = -1  # Added production S' -> S in the augmented grammar
 
+    # For the action table
+    ACCEPT = 0
+    SHIFT = 1
+    REDUCE = 2
+    STR_ACTION = ("A", "S", "R")
+
     def __init__(self, grammar):
         """Generate SLR(1) parser corresponding to a Grammar object"""
         self.g = grammar
         self._init_ccol()
+        self._init_tables()
 
     def items(self):
         """Iterator for LR(0) items of the augmented grammar
@@ -92,6 +99,52 @@ class SLR:
         ccol = [tuple(sorted(s, key=lambda t: (-t[1], t[0]))) for s in done]
         self.ccol = tuple(sorted(ccol, key=lambda tt: (tt[0][1], tt[0][0])))
 
+        # reverse index, to convert goto() result to a state number
+        self.ccol_idx = {frozenset(t): i for i, t in enumerate(self.ccol)}
+
+    class GrammarNotSLR(ValueError):
+        pass
+
+    def _set_action(self, state, symbol, action, info=0):
+        if symbol == '':
+            symbol = self.g.END
+
+        if (state, symbol) in self.actions:
+            prev_action = self.actions[state, symbol]
+            msg = "Reduce" if prev_action == action else "Shift"
+            msg += "/reduce conflict for ({}, {})".format(state, symbol)
+            raise self.GrammarNotSLR(msg)
+
+        self.actions[state, symbol] = (action, info)
+
+    def _init_tables(self):
+        """Compute parsing tables [TRDB] Alg 4.8 p. 227"""
+        self.actions = {}
+        self.gotos = {}
+
+        for i, set_i in enumerate(self.ccol):
+            for item in set_i:
+                prod_nb = item[0]
+                sym = self._get_after_cursor(item)
+
+                if sym in self.g.terminals:
+                    set_j = self.goto(set_i, sym)
+                    j = self.ccol_idx[set_j]
+                    self._set_action(i, sym, self.SHIFT, j)
+
+                elif sym == '' and prod_nb != self.AUG_PROD:
+                    lhs = self.g.productions[prod_nb][0]
+                    for f in self.g.follow[lhs]:
+                        self._set_action(i, f, self.REDUCE, prod_nb)
+
+                elif sym == '' and prod_nb == self.AUG_PROD:
+                    self._set_action(i, sym, self.ACCEPT)
+
+                elif sym in self.g.non_terminals:
+                    set_j = self.goto(set_i, sym)
+                    j = self.ccol_idx[set_j]
+                    self.gotos[i, sym] = j
+
 
 if __name__ == "__main__":  # pragma: no cover
     from grammar import Grammar
@@ -111,3 +164,21 @@ if __name__ == "__main__":  # pragma: no cover
         for it in items:
             print(slr.str_item(it))
         print()
+
+    def key(tup):
+        state, symbol = tup
+        if symbol == slr.g.END:
+            symbol = '$'
+        return state, symbol
+
+    print("Action table:")
+    for state, symbol in sorted(slr.actions, key=key):
+        action, info = slr.actions[state, symbol]
+        str_action = slr.STR_ACTION[action]
+        print("{}\t{}\t{}{}".format(state, symbol, str_action, info))
+    print()
+
+    print("Goto table:")
+    for state, symbol in sorted(slr.gotos):
+        print("{}\t{}\t{}".format(state, symbol, slr.gotos[state, symbol]))
+    print()
