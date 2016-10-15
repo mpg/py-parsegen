@@ -40,6 +40,7 @@ class KnownValues(unittest.TestCase):
         t_str_items = tuple(slr.str_item(it) for it in slr.items())
         self.assertEqual(self.str_items, t_str_items)
 
+    # [TRDB] example 4.34 p. 222
     start = (-1, 0)
     start_closure = {
             (-1, 0), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0),
@@ -50,6 +51,17 @@ class KnownValues(unittest.TestCase):
         slr = SLR(Grammar(self.gram))
         t_closure = slr.closure({self.start})
         self.assertEqual(self.start_closure, t_closure)
+
+    # [TRDB] example 4.35 p. 224
+    goto_items = {(-1, 1), (0, 1)}
+    goto_symbol = '+'
+    goto_result = {(0, 2), (2, 0), (3, 0), (4, 0), (5, 0)}
+
+    def test_goto(self):
+        """SLR: check goto() against know value"""
+        slr = SLR(Grammar(self.gram))
+        t_result = slr.goto(self.goto_items, self.goto_symbol)
+        self.assertEqual(self.goto_result, t_result)
 
 
 if __name__ == "__main__":  # pragma: no cover

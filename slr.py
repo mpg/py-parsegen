@@ -36,24 +36,42 @@ class SLR:
         out = chain((lhs, '->'), rhs[:cursor], ('|',), rhs[cursor:])
         return ' '.join(out)
 
+    def _get_after_cursor(self, item):
+        """Return the symbol after the cursor in item"""
+        prod_nb, cursor = item
+        lhs, rhs = self._get_prod(prod_nb)
+        return rhs[cursor] if cursor < len(rhs) else ''
+
     def closure(self, items):
         """Return the closure of s set of items [TRDB] Fig 4.33 p. 223"""
         todo = set(items)
         done = set()
 
         while todo:
-            prod_nb, cursor = todo.pop()
-            lhs, rhs = self._get_prod(prod_nb)
-            after_cursor = rhs[cursor]
+            it = todo.pop()
+            after_cursor = self._get_after_cursor(it)
             if after_cursor in self.g.non_terminals:
                 for i, prod in enumerate(self.g.productions):
                     if prod[0] == after_cursor:
                         new_it = (i, 0)
                         if new_it not in done:
-                            todo.add((i, 0))
-            done.add((prod_nb, cursor))
+                            todo.add(new_it)
+            done.add(it)
 
         return done
+
+    def goto(self, items, symbol):
+        """Return the set of new items reachable from items after symbol
+        [TRDB] Fig 4.34 p. 224"""
+        new_items = set()
+
+        for it in items:
+            after_cursor = self._get_after_cursor(it)
+            if after_cursor == symbol:
+                prod_nb, cursor = it
+                new_items.add((prod_nb, cursor + 1))
+
+        return self.closure(new_items)
 
 
 if __name__ == "__main__":  # pragma: no cover
