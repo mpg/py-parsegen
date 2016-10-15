@@ -2,6 +2,7 @@
 # coding: utf-8
 
 from parse_tree import ParseTree
+from itertools import chain
 
 
 class LL1:
@@ -40,18 +41,17 @@ class LL1:
 
     def parse(self, sentence):
         """Read a sentence (iterable of terminals), and:
-        - if it's in the language, do nothing (for now),
+        - if it's in the language, return its parse tree
         - otherwise, raise NotInLanguage
-        [TRDB] Algorithm 4.3 p. 187
-        """
+        [TRDB] Algorithm 4.3 p. 187"""
 
         # use a mixed stack with:
         # - symbols corresponding to the productions in progress
         # - tree nodes to go back to when their children are complete
         stack = [self.g.END, self.g.start_symbol]
         cur_node = None
-        tok_stream = iter(sentence)
-        token = next(tok_stream, self.g.END)
+        tok_stream = chain(iter(sentence), (self.g.END,))
+        token = next(tok_stream)
 
         while stack:
             state = stack.pop()
@@ -81,7 +81,7 @@ class LL1:
 
                 if state != self.g.END:
                     cur_node.children.append(ParseTree(token))
-                    token = next(tok_stream, self.g.END)
+                    token = next(tok_stream)
 
         return cur_node
 
