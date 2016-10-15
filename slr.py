@@ -141,7 +141,7 @@ class SLR:
                 elif sym == '' and prod_nb == self.AUG_PROD:
                     self._set_action(i, sym, self.ACCEPT)
 
-                elif sym in self.g.non_terminals:
+                else:  # sym in self.g.non_terminals:
                     set_j = self.goto(set_i, sym)
                     j = self.ccol_idx[set_j]
                     self.gotos[i, sym] = j
@@ -183,7 +183,7 @@ class SLR:
                 new_state = self.gotos[prev_state, lhs]
                 stack.append((new_state, node))
 
-            elif action == self.ACCEPT:
+            else:  # action == self.ACCEPT:
                 return stack[-1][1]
 
 

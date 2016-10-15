@@ -88,6 +88,13 @@ class KnownValues(unittest.TestCase):
         slr = SLR(Grammar(self.gram))
         self.assertEqual(self.ccol, slr.ccol)
 
+    bad_grammar = ("E -> E + E | E * E | ( E ) | id",)
+
+    def test_bad_grammar(self):
+        """SLR: init should raise if grammar is not SLR"""
+        with self.assertRaises(SLR.GrammarNotSLR):
+            SLR(Grammar(self.bad_grammar))
+
     # [TRDB] Fig. 4.31 p. 219
     # /!\ for reduce, production numbers are shifted by 1
     actions = {
