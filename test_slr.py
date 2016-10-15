@@ -24,11 +24,6 @@ class KnownValues(unittest.TestCase):
             (5, 0), (5, 1),
     )
 
-    def test_items(self):
-        """SLR: check items() against known value"""
-        slr = SLR(Grammar(self.gram))
-        self.assertEqual(self.items, tuple(slr.items()))
-
     str_items = (
             "| -> | E", "| -> E |",
             "E -> | E + T", "E -> E | + T", "E -> E + | T", "E -> E + T |",
@@ -42,7 +37,7 @@ class KnownValues(unittest.TestCase):
     def test_str_items(self):
         """SLR: check str_item() against known value"""
         slr = SLR(Grammar(self.gram))
-        t_str_items = tuple(slr.str_item(it) for it in slr.items())
+        t_str_items = tuple(slr.str_item(it) for it in self.items)
         self.assertEqual(self.str_items, t_str_items)
 
     # [TRDB] example 4.34 p. 222

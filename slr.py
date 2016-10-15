@@ -22,16 +22,6 @@ class SLR:
         self._init_ccol()
         self._init_tables()
 
-    def items(self):
-        """Iterator for LR(0) items of the augmented grammar
-        An item is a pair (production number, cursor position)"""
-        yield (self.AUG_PROD, 0)
-        yield (self.AUG_PROD, 1)
-        for i, prod in enumerate(self.g.productions):
-            lhs, rhs = prod
-            for cursor in range(len(rhs) + 1):
-                yield (i, cursor)
-
     def _get_prod(self, nb):
         """Get production by number in the augmented grammar"""
         if nb == self.AUG_PROD:
