@@ -12,6 +12,7 @@ class SLR:
     def __init__(self, grammar):
         """Generate SLR(1) parser corresponding to a Grammar object"""
         self.g = grammar
+        self._init_ccol()
 
     def items(self):
         """Iterator for LR(0) items of the augmented grammar
@@ -58,7 +59,7 @@ class SLR:
                             todo.add(new_it)
             done.add(it)
 
-        return done
+        return frozenset(done)
 
     def goto(self, items, symbol):
         """Return the set of new items reachable from items after symbol
@@ -73,6 +74,24 @@ class SLR:
 
         return self.closure(new_items)
 
+    def _init_ccol(self):
+        """Compute the canonical collection of sets of LR(0) items
+        [TRDB] Fig 4.34 p. 224"""
+        todo = {self.closure({(self.AUG_PROD, 0)})}
+        done = set()
+
+        while todo:
+            cur = todo.pop()
+            for s in self.g.symbols:
+                new = self.goto(cur, s)
+                if new and new not in done:
+                    todo.add(new)
+            done.add(cur)
+
+        # for testing convenience, sort in the same order as [TRDB]
+        ccol = [tuple(sorted(s, key=lambda t: (-t[1], t[0]))) for s in done]
+        self.ccol = tuple(sorted(ccol, key=lambda tt: (tt[0][1], tt[0][0])))
+
 
 if __name__ == "__main__":  # pragma: no cover
     from grammar import Grammar
@@ -86,7 +105,9 @@ if __name__ == "__main__":  # pragma: no cover
     with open(sys.argv[1]) as gram_in:
         slr = SLR(Grammar(gram_in))
 
-    print("LR(0) items:")
-    for it in slr.items():
-        print(slr.str_item(it))
-    print()
+    print("Canonical collection of LR(0) items:")
+    for i, items in enumerate(slr.ccol):
+        print(i)
+        for it in items:
+            print(slr.str_item(it))
+        print()

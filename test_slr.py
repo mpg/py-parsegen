@@ -63,6 +63,26 @@ class KnownValues(unittest.TestCase):
         t_result = slr.goto(self.goto_items, self.goto_symbol)
         self.assertEqual(self.goto_result, t_result)
 
+    ccol = (
+            ((-1, 0), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)),
+            ((-1, 1), (0, 1)),
+            ((1, 1), (2, 1)),
+            ((3, 1),),
+            ((4, 1), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)),
+            ((5, 1),),
+            ((0, 2), (2, 0), (3, 0), (4, 0), (5, 0)),
+            ((2, 2), (4, 0), (5, 0)),
+            ((4, 2), (0, 1)),
+            ((0, 3), (2, 1)),
+            ((2, 3),),
+            ((4, 3),),
+    )
+
+    def test_ccol(self):
+        """SLR: check ccol against known value (set by __init__)"""
+        slr = SLR(Grammar(self.gram))
+        self.assertEqual(self.ccol, slr.ccol)
+
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()
