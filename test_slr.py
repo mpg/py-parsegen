@@ -124,6 +124,29 @@ class KnownValues(unittest.TestCase):
         self.assertEqual(self.actions, slr.actions)
         self.assertEqual(self.gotos, slr.gotos)
 
+    bad_sentences = ("+ id", "id +", "id + + id")
+
+    def test_bad_sentences(self):
+        """SLR: parse() should raise on invalid sentences"""
+        slr = SLR(Grammar(self.gram))
+        for bs in self.bad_sentences:
+            with self.assertRaises(SLR.NotInLanguage):
+                slr.parse(bs.split())
+
+    good_sentences = (
+            "id",
+            "id + id",
+            "id + id + id",
+            "id + id * id",
+            "( id + id ) * id",
+    )
+
+    def test_good_sentences(self):
+        """SLR: parse() should accept valid sentences"""
+        slr = SLR(Grammar(self.gram))
+        for s in self.good_sentences:
+            slr.parse(s.split())
+
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()

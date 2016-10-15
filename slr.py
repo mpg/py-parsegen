@@ -145,13 +145,51 @@ class SLR:
                     j = self.ccol_idx[set_j]
                     self.gotos[i, sym] = j
 
+    class NotInLanguage(ValueError):
+        pass
+
+    def parse(self, sentence):
+        """Read a sentence (iterable of terminals), and:
+        - if it's in the language, do nothing (for now),
+        - otherwise, raise NotInLanguage
+        [TRDB] Algorithm Fig 4.30 p. 219"""
+
+        # store pairs on the stack instead of two values
+        stack = [(0, self.AUG_PROD)]
+        tok_stream = chain(iter(sentence), (self.g.END,))
+        token = next(tok_stream)
+
+        while True:
+            state, prod_nb = stack[-1]
+
+            try:
+                action, info = self.actions[state, token]
+            except KeyError:
+                msg = "In state '{}', got '{}'".format(state, token)
+                raise self.NotInLanguage(msg)
+
+            if action == self.SHIFT:
+                stack.append((info, token))
+                token = next(tok_stream)
+
+            elif action == self.REDUCE:
+                lhs, rhs = self.g.productions[info]
+                for _ in range(len(rhs)):
+                    stack.pop()
+                prev_state = stack[-1][0]
+                new_state = self.gotos[prev_state, lhs]
+                stack.append((new_state, lhs))
+
+            elif action == self.ACCEPT:
+                return
+
 
 if __name__ == "__main__":  # pragma: no cover
     from grammar import Grammar
     import sys
 
-    if not 2 <= len(sys.argv) <= 2:
-        usage = "Usage: slr.py grammar_file\n"
+    if not 2 <= len(sys.argv) <= 4:
+        usage = "Usage: slr.py grammar_file [string_to_parse] [name]\n"
         sys.stderr.write(usage)
         sys.exit(1)
 
@@ -186,3 +224,26 @@ if __name__ == "__main__":  # pragma: no cover
     for state, symbol in sorted(slr.gotos):
         print("{}\t{}\t{}".format(state, symbol, slr.gotos[state, symbol]))
     print()
+
+    if len(sys.argv) == 2:
+        sys.exit(0)
+
+    sentence = sys.argv[2]
+    try:
+        tree = slr.parse(sentence.split())
+    except SLR.NotInLanguage as err:
+        sys.stderr.write("Sentence not in language:\n{}\n".format(err))
+        sys.exit(1)
+
+    print("Sentence accepted")
+    # print("Parse tree:")
+    # print("\n".join(tree.lines()))
+    # print()
+
+    # print("Rightmost derivation:")
+    # print(" -> ".join(tree.rightmost()))
+    # print()
+
+    # if len(sys.argv) == 4:
+    #     tree.draw(sys.argv[3])
+    #     print("Saved to {}.pdf".format(sys.argv[3]))

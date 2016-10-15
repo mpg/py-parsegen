@@ -27,5 +27,7 @@ $PYTHON ll1.py examples/g1 "id + id + id" 2>/dev/null && die $LINENO
 $PYTHON slr.py 2>/dev/null && die $LINENO
 $PYTHON slr.py examples/ex-4.34 || die $LINENO
 $PYTHON slr.py examples/ambiguous 2>/dev/null && die $LINENO
+$PYTHON slr.py examples/ex-4.34 "id + id * id" || die $LINENO
+$PYTHON slr.py examples/ex-4.34 "oops" 2>/dev/null && die $LINENO
 
 echo PASSED >&2
