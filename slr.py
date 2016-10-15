@@ -23,17 +23,37 @@ class SLR:
             for cursor in range(len(rhs) + 1):
                 yield (i, cursor)
 
+    def _get_prod(self, nb):
+        """Get production by number in the augmented grammar"""
+        if nb == self.AUG_PROD:
+            return "|", self.g.start_symbol
+        return self.g.productions[nb]
+
     def str_item(self, item):
         """Human-friendly formatting of an item"""
         prod_nb, cursor = item
-
-        if prod_nb == self.AUG_PROD:
-            lhs, rhs = "|", self.g.start_symbol
-        else:
-            lhs, rhs = self.g.productions[prod_nb]
-
+        lhs, rhs = self._get_prod(prod_nb)
         out = chain((lhs, '->'), rhs[:cursor], ('|',), rhs[cursor:])
         return ' '.join(out)
+
+    def closure(self, items):
+        """Return the closure of s set of items [TRDB] Fig 4.33 p. 223"""
+        todo = set(items)
+        done = set()
+
+        while todo:
+            prod_nb, cursor = todo.pop()
+            lhs, rhs = self._get_prod(prod_nb)
+            after_cursor = rhs[cursor]
+            if after_cursor in self.g.non_terminals:
+                for i, prod in enumerate(self.g.productions):
+                    if prod[0] == after_cursor:
+                        new_it = (i, 0)
+                        if new_it not in done:
+                            todo.add((i, 0))
+            done.add((prod_nb, cursor))
+
+        return done
 
 
 if __name__ == "__main__":  # pragma: no cover
