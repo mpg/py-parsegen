@@ -156,7 +156,11 @@ if __name__ == "__main__":  # pragma: no cover
         sys.exit(1)
 
     with open(sys.argv[1]) as gram_in:
-        slr = SLR(Grammar(gram_in))
+        try:
+            slr = SLR(Grammar(gram_in))
+        except SLR.GrammarNotSLR as err:
+            sys.stderr.write("Grammar is not SLR:\n{}\n".format(err))
+            sys.exit(1)
 
     print("Canonical collection of LR(0) items:")
     for i, items in enumerate(slr.ccol):
