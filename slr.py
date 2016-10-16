@@ -102,6 +102,9 @@ class SLR:
 
         if (state, symbol) in self.actions:
             prev_action, prev_info = self.actions[state, symbol]
+            if prev_action == action and prev_info == info:
+                return
+
             msg = "{}/reduce conflict for ({}, {}): {}{} vs {}{}".format(
                     "Reduce" if prev_action == action else "Shift",
                     state, symbol, self.STR_ACTION[action], info,
