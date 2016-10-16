@@ -95,6 +95,15 @@ class KnownValues(unittest.TestCase):
             with self.assertRaisesRegex(SLR.GrammarNotSLR, msg_re):
                 SLR(Grammar(gram))
 
+    good_grammars = (
+            ("E -> T * E | T", "T -> int + T | int | ( E )"),
+    )
+
+    def test_good_grammar(self):
+        """SLR: init should not raise if grammar is SLR"""
+        for gram in self.good_grammars:
+            SLR(Grammar(gram))
+
     # [TRDB] Fig. 4.31 p. 219
     # /!\ for reduce, production numbers are shifted by 1
     actions = {
