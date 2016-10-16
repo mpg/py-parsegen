@@ -102,8 +102,10 @@ class SLR:
 
         if (state, symbol) in self.actions:
             prev_action, prev_info = self.actions[state, symbol]
-            msg = "Reduce" if prev_action == action else "Shift"
-            msg += "/reduce conflict for ({}, {})".format(state, symbol)
+            msg = "{}/reduce conflict for ({}, {}): {}{} vs {}{}".format(
+                    "Reduce" if prev_action == action else "Shift",
+                    state, symbol, self.STR_ACTION[action], info,
+                    self.STR_ACTION[prev_action], prev_info)
             raise self.GrammarNotSLR(msg)
 
         self.actions[state, symbol] = (action, info)
