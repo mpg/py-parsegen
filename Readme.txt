@@ -10,5 +10,10 @@ References used:
 All the code here is written by Manuel Pégourié-Gonnard in 2016
 and distributed under the terms of the WTFPL v2.
 
+This is a project for fun and self-education, as a consequence:
+- it has 100% test coverage
+- input/error handling is quite primitive
 
-
+In particular when writing grammars, as well as sentences to be parsed,
+tokens need to be separated by whitespace, eg "( id + id ) * id",
+not "(id + id) * id". I know it's annoying, but see above.
